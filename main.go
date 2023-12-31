@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/eliofery/golang-fiber-restapi/database"
+	"github.com/eliofery/golang-fiber-restapi/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
 )
 
 func main() {
@@ -23,12 +23,7 @@ func main() {
 	}
 
 	server := fiber.New()
-
-	server.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).JSON(fiber.Map{
-			"message": "Hello, World!",
-		})
-	})
+	routes.RegisterRoutes(server)
 
 	err = server.Listen(":3000")
 	if err != nil {
