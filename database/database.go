@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/eliofery/golang-fiber-restapi/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"os"
@@ -26,6 +27,25 @@ func Connect() error {
 	}
 
 	DB = dbConnection
+
+	return nil
+}
+
+func Migrations() error {
+	op := "database.Migrations"
+
+	err := DB.Debug().AutoMigrate(
+		&model.Cashier{},
+		&model.Category{},
+		&model.Discount{},
+		&model.Order{},
+		&model.Payment{},
+		&model.PaymentType{},
+		&model.Product{},
+	)
+	if err != nil {
+		return fmt.Errorf("%v: %w", op, err)
+	}
 
 	return nil
 }

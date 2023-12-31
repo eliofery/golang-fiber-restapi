@@ -18,6 +18,10 @@ func main() {
 		log.Fatal("Не удалось подключиться к базе данных: ", err)
 	}
 
+	if err = database.Migrations(); err != nil {
+		log.Fatal("Не удалось мигрировать базу данных: ", err)
+	}
+
 	server := fiber.New()
 
 	server.Get("/", func(ctx *fiber.Ctx) error {
