@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -31,7 +32,7 @@ func CreateCashier(ctx *fiber.Ctx) error {
 	}
 
 	cashier.CreatedAt = time.Now()
-	cashier.UpdatedAt = time.Now()
+	cashier.UpdatedAt = cashier.CreatedAt
 
 	database.DB.Create(&cashier)
 
@@ -50,7 +51,24 @@ func DeleteCashier(ctx *fiber.Ctx) error {
 }
 
 func CashiersList(ctx *fiber.Ctx) error {
-	return ctx.SendString("CashiersList")
+	var (
+		cashiers []model.Cashier
+		count    int64
+	)
+
+	limit, err := strconv.Atoi(ctx.Query("limit"))
+	if err != nil {
+		limit = -1
+	}
+
+	offset, _ := strconv.Atoi(ctx.Query("offset"))
+
+	database.DB.Select("*").Limit(limit).Offset(offset).Find(&cashiers).Count(&count)
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"count":    count,
+		"cashiers": cashiers,
+	})
 }
 
 func CashierDetails(ctx *fiber.Ctx) error {

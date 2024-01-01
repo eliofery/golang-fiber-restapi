@@ -1,0 +1,1 @@
+GET http://localhost:3000/cashiers?limit=1&offset=2
