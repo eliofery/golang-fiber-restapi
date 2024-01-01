@@ -1,0 +1,7 @@
+POST http://localhost:3000/cashiers
+content-type: application/json
+
+{
+  "name": "user",
+  "password": "123"
+}
