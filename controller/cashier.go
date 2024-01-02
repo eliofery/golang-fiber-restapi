@@ -72,5 +72,18 @@ func CashiersList(ctx *fiber.Ctx) error {
 }
 
 func CashierDetails(ctx *fiber.Ctx) error {
-	return ctx.SendString("CashierDetails")
+	var cashier model.Cashier
+
+	id := ctx.Params("id")
+
+	database.DB.Select("*").Where("id = ?", id).First(&cashier)
+	if cashier.ID == 0 {
+		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+			"message": "Касса не найдена",
+		})
+	}
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"cashier": cashier,
+	})
 }
