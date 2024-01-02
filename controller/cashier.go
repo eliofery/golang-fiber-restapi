@@ -83,7 +83,22 @@ func UpdateCashier(ctx *fiber.Ctx) error {
 }
 
 func DeleteCashier(ctx *fiber.Ctx) error {
-	return ctx.SendString("DeleteCashier")
+	var cashier model.Cashier
+
+	id := ctx.Params("id")
+
+	database.DB.Where("id = ?", id).First(&cashier)
+	if cashier.ID == 0 {
+		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+			"message": "Касса не найдена",
+		})
+	}
+
+	database.DB.Delete(&cashier)
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "Касса удалена",
+	})
 }
 
 func CashiersList(ctx *fiber.Ctx) error {
