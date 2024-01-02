@@ -43,7 +43,43 @@ func CreateCashier(ctx *fiber.Ctx) error {
 }
 
 func UpdateCashier(ctx *fiber.Ctx) error {
-	return ctx.SendString("UpdateCashier")
+	var cashier model.Cashier
+
+	id := ctx.Params("id")
+
+	database.DB.Find(&cashier, "id = ?", id)
+	if cashier.ID == 0 {
+		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{
+			"message": "Кассир не найден",
+		})
+	}
+
+	var updateCashier model.Cashier
+	err := ctx.BodyParser(&updateCashier)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Не удалось обновить кассу",
+			"error":   err.Error(),
+		})
+	}
+
+	if err := validate.Struct(updateCashier); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Не удалось обновить кассу",
+			"error":   err.Error(),
+		})
+	}
+
+	cashier.Name = updateCashier.Name
+	cashier.Password = updateCashier.Password
+	cashier.UpdatedAt = time.Now()
+
+	database.DB.Save(&cashier)
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "Касса обновлена",
+		"cashier": cashier,
+	})
 }
 
 func DeleteCashier(ctx *fiber.Ctx) error {
