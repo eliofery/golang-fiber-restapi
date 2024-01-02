@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterRoutes(server *fiber.App) {
-	server.Get("/cashiers/:id/login", controller.Login)
+	server.Post("/cashiers/login", controller.Login)
 	server.Get("/cashiers/:id/logout", controller.Logout)
 	server.Get("/cashiers/:id/password", controller.Password)
 
